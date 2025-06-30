@@ -32,7 +32,12 @@ function init(io) {
   io.on("connection", (socket) => {
     logger.info(`客户端连接: ${socket.id}`)
 
-    io.emit("qr_addr", process.env.QR_ADDR || `http://localhost:5173?table=`);
+    process.env.QR_ADDR = process.env.QR_ADDR || `http://localhost:5173?table=`;
+
+    io.emit("env", {
+      QR_ADDR: process.env.QR_ADDR,
+      showRoastDuckPage: process.env.showRoastDuckPage,
+    });
 
     const tableSocket = new TableSocket(io)
     tableSocket.registerHandlers(socket)
@@ -251,6 +256,18 @@ function init(io) {
 
         socket.on("disconnect", (reason) => {
         logger.info(`连接取消: ${reason}`)
+    });
+
+    socket.on("update_menu_item", (item) => {
+      for (let i = 0; i < appState.menu.length; i++) {
+        if (appState.menu[i].id == item.id)
+        {
+          appState.menu[i] = {...appState.menu[i], ...item};
+          io.emit("menu_item_changed", item);
+
+          logger.info("menu_item_changed", item);
+        }
+      }
     });
   });
 

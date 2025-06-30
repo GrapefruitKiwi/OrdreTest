@@ -26,7 +26,13 @@ function init(io) {
   io.on("connection", (socket) => {
     logger.info(`客户端连接: ${socket.id}`)
 
-    io.emit("qr_addr", process.env.QR_ADDR || `http://localhost:${appState.clientPort}?table=`);
+
+    process.env.QR_ADDR = process.env.QR_ADDR || `http://localhost:${appState.clientPort}?table=`;
+
+    io.emit("env", {
+      QR_ADDR: process.env.QR_ADDR,
+      showRoastDuckPage: process.env.showRoastDuckPage,
+    });
 
     const tableSocket = new TableSocket(io)
     tableSocket.registerHandlers(socket)
@@ -34,8 +40,6 @@ function init(io) {
     const orderSocket = new OrderSocket(io)
     orderSocket.registerHandlers(socket)
 
-    // 餐桌密码验证
-    //tableService.tableLogin(socket)
 
     // 客户端获取总消费 // add signal
     socket.on("client_tableTotalAmount", (tableId, cb) => {

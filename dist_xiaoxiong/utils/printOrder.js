@@ -25,7 +25,6 @@ function print_order(order) {
         }
 
         if (hasData) {
-            console.log(printer.data.every_one);
             print_orde_to_io(printer,order,printer.data.every_one == "true");
         }
     }
@@ -51,10 +50,17 @@ function print_orde_to_io(printer,order,every_one)
 
     console.log("....",every_one);
 
+
+    let BLOD_HAD = "";
+    if (printer.data.tags && printer.data.tags.includes("\b"))
+    {
+        BLOD_HAD = "\b";
+    }
+
     print_data = "";
 
     add_print( "\torder id: " + order.id);
-    add_print(  "\ttable: " + order.table );
+    add_print(  BLOD_HAD + "\ttable: " + order.table );
     add_print(  "\ttime: " + format_datetime(order.timestamp) );
     add_print(  "-----------------------------------" );
 
@@ -96,8 +102,8 @@ function print_orde_to_io(printer,order,every_one)
             else
                 name = item.name + " - " + name;
 
-            add_print(  item.dishid + "   x " + item.quantity);
-            add_print(  name );
+            add_print( BLOD_HAD + item.dishid + "   x " + item.quantity);
+            add_print(  BLOD_HAD + name );
             add_print();
         }
         else

@@ -81,22 +81,26 @@ app.use(express.static(path.join(__dirname, "public"), {
   }
 }));
 
-async function main() {
+(async () => {
   await initUserData();
-  appStateService.loadAppState();
-  menuController.loadMenu();
-  socketService.init(io);
+  // 后续正常启动 HTTP/Socket 服务
+})();
 
-  const PORT = process.env.PORT || 80;
-  server.listen(PORT, () => {
-    logger.info(`🟢 服务器已启动，监听端口 ${PORT}`);
-  });
+// 载入AppState数据
+appStateService.loadAppState()
 
-holiday.updateToday(appState);
-runInterval();
-}
+// 载入菜单数据
+menuController.loadMenu();
 
-main();
+// 初始化 Socket.IO 事件
+socketService.init(io);
+
+// 启动服务器
+const PORT = process.env.PORT || 80;
+server.listen(PORT, () => {
+  logger.info(`🟢 服务器已启动，监听端口 ${PORT}`)
+});
+
 // 捕获关闭信号时保存数据
 process.on("SIGINT", () => {
   logger.info(`🛑 收到退出信号，正在保存数据...`)
@@ -137,3 +141,6 @@ function runInterval() {
   }, 1000 * 60);
 }
 
+// update today for appState.isFestiveDay
+holiday.updateToday(appState);
+runInterval();

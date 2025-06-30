@@ -12,7 +12,7 @@ exports.handleUpload = async (req, res) => {
   }
 
   try {
-    const rows = await uploadService.processCSV(file); // 假设返回解析行数
+    const rows = await uploadService.processCSV(file, req.body.update_all); // 假设返回解析行数
     menuController.loadMenu();                  // 刷新菜单
 
     logger.info("菜单上传成功")

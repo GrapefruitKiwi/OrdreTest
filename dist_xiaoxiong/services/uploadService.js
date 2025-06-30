@@ -28,8 +28,8 @@ function makeDishData(data) {
   let note = data['Body (HTML)'];
   if (note) {
     note = note
-      .replaceAll(/<\/?(div|p|span|blockquote|img)>/g, '')
-      .replaceAll("<br>", "\n");
+        .replaceAll(/<\/?(div|p|span|blockquote|img)>/g, '')
+        .replaceAll("<br>", "\n");
   }
 
   const ret = {
@@ -47,21 +47,21 @@ function makeDishData(data) {
   return ret;
 }
 
-exports.processCSV = (file) => {
+exports.processCSV = (file,all) => {
   return new Promise((resolve, reject) => {
     const results = [];
 
     fs.createReadStream(file.path)
-      .pipe(csv())
-      .on('data', (data) => {
-        const transformed = makeDishData(data);
-        results.push(transformed);
-      })
-      .on('end', () => {
-        menuService.saveMenu(results);
-        fs.unlinkSync(file.path); // 删除临时文件
-        resolve(results);
-      })
-      .on('error', reject);
+        .pipe(csv())
+        .on('data', (data) => {
+          const transformed = makeDishData(data);
+          results.push(transformed);
+        })
+        .on('end', () => {
+          menuService.updateMenu(results,all);
+          fs.unlinkSync(file.path); // 删除临时文件
+          resolve(results);
+        })
+        .on('error', reject);
   });
 };

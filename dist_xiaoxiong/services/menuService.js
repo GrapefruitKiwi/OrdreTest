@@ -46,12 +46,12 @@ function loadMenu() {
   } catch (error) {
     console.warn("Error: ", error)
   }
-  
+
 }
 
 function getDishCategory(id)
 {
-  if ((!id) || (id == 0)) return  "XIAOXIONG® RAMEN";
+  if ((!id) || (id == 0)) return  "Caixa Aleatória";
   if (appState.dishTags[id]) return appState.dishTags[id];
   return appState.dishCategory[id];
 }
@@ -61,42 +61,69 @@ function getMenu() {
   return appState.menu;
 }
 
-function saveMenu(data)
+function updateMenu(data, update_all)
 {
+  console.log("updateMenu update_all:",update_all);
+
   try {
-    appState.menu = data;
-  db.saveData('menu', data);
+    //console.log(appState.menu);
 
-  const types = [];
-
-  for (let i = 0; i < data.length; i++) {
-    const value = data[i];
-    if (!types.includes(value.category)) {
-      if (value.category != "") types.push(value.category);
+    if (update_all) {
+      appState.menu = data;
     }
-  }
+    else {
+      for (let i = 0; i < data.length; i++) {
+        const orgData = data[i];
+        let oldData = undefined;
+        for (let j = 0; j < appState.menu.length; j++) {
+          oldData = appState.menu[j];
+          if (oldData.id == orgData.id && oldData.handle == orgData.handle) {
+            //appState.menu[j] = {...oldData, ...orgData};
+            //console.log("update..." , appState.menu[j].id);
+            break;
+          } else {
+            oldData = undefined;
+          }
+        }
 
-  const orderTabs = [];
-
-  for (let i = 0; i < appState.orderMenuTab.length; i++) {
-    const tab = appState.orderMenuTab[i];
-    if (types.includes(tab)) {
-      orderTabs.push(tab);
+        if (!oldData) {
+          appState.menu.push(orgData);
+          //console.log("add..." , orgData.id);
+        }
+      }
     }
-  }
 
-  for (let i = 0; i < types.length; i++) {
-    const tab = types[i];
-    if (!orderTabs.includes(tab)) {
-      orderTabs.push(tab);
+    db.saveData('menu', appState.menu);
+
+    const types = [];
+
+    for (let i = 0; i < data.length; i++) {
+      const value = data[i];
+      if (!types.includes(value.category)) {
+        if (value.category != "") types.push(value.category);
+      }
     }
-  }
 
-  saveOrderMenuTab(orderTabs);
+    const orderTabs = [];
+
+    for (let i = 0; i < appState.orderMenuTab.length; i++) {
+      const tab = appState.orderMenuTab[i];
+      if (types.includes(tab)) {
+        orderTabs.push(tab);
+      }
+    }
+
+    for (let i = 0; i < types.length; i++) {
+      const tab = types[i];
+      if (!orderTabs.includes(tab)) {
+        orderTabs.push(tab);
+      }
+    }
+
+    saveOrderMenuTab(orderTabs);
   } catch (error) {
     console.warn("Error: ", error)
   }
-  
 }
 
 function getOrderMenuTab() {
@@ -105,8 +132,8 @@ function getOrderMenuTab() {
 
 function saveOrderMenuTab(data) {
   try {
-      appState.orderMenuTab = data;
-  db.saveData('orderMenuTab', data);
+    appState.orderMenuTab = data;
+    db.saveData('orderMenuTab', data);
   } catch (error) {
     console.warn("Error: ", error)
   }
@@ -129,7 +156,7 @@ function findDish(id)
 module.exports = {
   loadMenu,
   getMenu,
-  saveMenu,
+  updateMenu,
   getOrderMenuTab,
   saveOrderMenuTab,
   findDish,

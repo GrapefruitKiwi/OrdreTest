@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require("path");
 
 const appStateFile = 'appState.json'
-const dirFolder = 'save'
+const dirFolder = process.env.SAVE_ADDR || 'save/default'
 
 const datas = {};
 
@@ -82,7 +82,7 @@ function fileExists(filename) {
 }
 
 if (!fs.existsSync(dirFolder)) {
-	fs.mkdirSync(dirFolder);
+	fs.mkdirSync(dirFolder,{ recursive: true });
 }
 
 module.exports = {
