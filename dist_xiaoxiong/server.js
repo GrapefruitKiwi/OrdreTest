@@ -69,19 +69,22 @@ app.use(express.static(path.join(__dirname, "public"), {
   }
 }));
 
-(async () => {
+async function main() {
   await initUserData();
-  // 后续正常启动 HTTP/Socket 服务
-})();
+  appStateService.loadAppState();
+  menuController.loadMenu();
+  socketService.init(io);
 
-// 载入AppState数据
-appStateService.loadAppState()
+  const PORT = process.env.PORT || 80;
+  server.listen(PORT, () => {
+    logger.info(`🟢 服务器已启动，监听端口 ${PORT}`);
+  });
 
-// 载入菜单数据
-menuController.loadMenu();
+  runCleanInterval();
+  runFandaysInterval();
+}
 
-// 初始化 Socket.IO 事件
-socketService.init(io);
+main();
 
 // 启动服务器
 const PORT = process.env.PORT || 80;
@@ -146,6 +149,3 @@ function runFandaysInterval(){
     runFandaysInterval();
   }, 1000 * 3600);
 }
-
-runCleanInterval();
-runFandaysInterval();
