@@ -86,12 +86,6 @@ async function main() {
 
 main();
 
-// 启动服务器
-const PORT = process.env.PORT || 80;
-server.listen(PORT, () => {
-  logger.info(`🟢 服务器已启动，监听端口 ${PORT}`)
-});
-
 // 捕获关闭信号时保存数据
 process.on("SIGINT", () => {
   logger.info(`🛑 收到退出信号，正在保存数据...`)
