@@ -37,6 +37,7 @@ function init(io) {
     io.emit("env", {
       QR_ADDR: process.env.QR_ADDR,
       showRoastDuckPage: process.env.showRoastDuckPage,
+      SAVE_ADDR: process.env.SAVE_ADDR,
     });
 
     const tableSocket = new TableSocket(io)
@@ -100,7 +101,8 @@ function init(io) {
       io.emit("menu_data", appState.menu,appState.orderMenuTab);
     })
 
-
+    //发送餐厅名字
+    socket.emit("restaurant_name", )
 
     // 发送价格信息
     socket.emit("get_people_price", () => {
