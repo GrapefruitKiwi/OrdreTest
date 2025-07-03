@@ -17,6 +17,7 @@ module.exports = {
       TABLE_NUMBER: [[1, 35]],
       SAVE_ADDR: "save/ss_saldanha",
       ENABLE_ROAST_DUCK: false,
+      RESERVE_URL: "https://www.google.com/",
     }
   }]
 }
