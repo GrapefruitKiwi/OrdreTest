@@ -38,6 +38,7 @@ function init(io) {
       QR_ADDR: process.env.QR_ADDR,
       showRoastDuckPage: process.env.showRoastDuckPage,
       SAVE_ADDR: process.env.SAVE_ADDR,
+      RESERVE_URL: process.env.RESERVE_URL,
     });
 
     const tableSocket = new TableSocket(io)
@@ -101,9 +102,6 @@ function init(io) {
       io.emit("menu_data", appState.menu,appState.orderMenuTab);
     })
 
-    //发送餐厅名字
-    socket.emit("restaurant_name", )
-
     // 发送价格信息
     socket.emit("get_people_price", () => {
       //logger.info(`发送给管理端价格信息`)
@@ -154,8 +152,6 @@ function init(io) {
         logger.info(`订单提交成功 订单号 - ${order.data.id}`)
         logger.info(formatOrderLog(orderData))
 
-        print_order(order.data);
-
         io.emit("new_order", order.data);
         socket.emit("📢 已广播新订单:", order.data);
 
@@ -170,7 +166,10 @@ function init(io) {
         if (table.success) {
           // io.emit('client_table', table)
           sendMsg2TableClient(io,table)
+          order.data.people = table.data.people;
         }
+
+        print_order(order.data);
         
       } else {
         logger.info(`订单提交失败`)
@@ -262,7 +261,8 @@ function init(io) {
             printer.data.curPrinter = value.printer;
             printer.data.menu = value.menu;
             printer.data.every_one = value.every_one;
-            printer.socket.emit('select_printer',value.printer, value.menu.toString(), value.every_one);
+            printer.data.fontSize = value.fontSize;
+            printer.socket.emit('select_printer',value.printer, value.menu.toString(), value.every_one,value.fontSize);
           }
         }
       }
